@@ -3,8 +3,8 @@
 namespace WorkerThink;
 
 use WorkerThink\Command\Worker;
-use WorkerThink\Command\WorkerHttpForWinHpm;
-use WorkerThink\Command\WorkerHttpForWin;
+use WorkerThink\Command\WorkerStartForWin;
+use WorkerThink\Command\WorkerForWin;
 
 class Service extends \think\Service
 {
@@ -15,12 +15,12 @@ class Service extends \think\Service
 
     public function boot(): void
     {
-        define('PKG_PATH', __DIR__);
+        defined('__WT_PKG__') or define('__WT_PKG__', __DIR__);
 
         $this->commands([
-            WorkerHttpForWinHpm::class,
-            WorkerHttpForWin::class,
             Worker::class,
+            WorkerForWin::class,
+            WorkerStartForWin::class,
         ]);
     }
 }

@@ -18,7 +18,7 @@ class Worker extends Command
             ->addArgument('server', Argument::REQUIRED, "The server to start. http|ws")
             ->addArgument('action', Argument::REQUIRED, "start|stop|restart|reload|status")
             ->addOption('daemon', 'd', Option::VALUE_NONE, 'Start in daemon mode.')
-            ->setDescription('Worker server');
+            ->setDescription('Starting HTTP|WS Service on Linux System through Workerman');
     }
 
     protected function execute(Input $input, Output $output): void
@@ -27,7 +27,7 @@ class Worker extends Command
         $server = trim($input->getArgument('server'));
 
         if (!in_array($server, ['http', 'ws'])) {
-            $output->writeln("<error>Invalid argument action:$server, Expected http|ws .</error>");
+            $output->writeln("<error>Invalid argument server:$server, Expected http|ws .</error>");
             exit(1);
         }
 
@@ -57,7 +57,7 @@ class Worker extends Command
         array_shift($argv);
         array_unshift($argv, 'Worker');
 
-        $serverPath = sprintf("%s/Servers/%s/start*.php", PKG_PATH, Str::studly($server));
+        $serverPath = sprintf("%s/Servers/%s/start*.php", __WT_PKG__, Str::studly($server));
         $startFiles = glob($serverPath);
         if (!$startFiles) {
             $output->writeln("<error>$server server does not exist.</error>");
