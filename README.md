@@ -19,11 +19,8 @@
 # 启动http服务
 php think worker:win http
 php think worker:start http
-
-# 如果需要支持 热更新 ，只需要在命令后面加上 -u 参数即可
-php think worker:win http -u
 ```
-注意：worker:start 命令方式启动的服务 不支持 热更新
+> 注意：在调试模式下将自动开启热更新，但使用 `worker:start` 命令方式启动的服务不支持热更新，热更新配置在 `/config/worker_process/`中
 
 ### Linux/Mac
 * 以下命令权限不足请自行加sudo
@@ -87,7 +84,7 @@ php think worker:win ws -u
 ### php cli下不支持的特性
 1. Cookie和Session：我们也建议您无必要不使用，通常无需担心。
 2. move_uploaded_file：框架的文件上传类中已经兼容rename进行上传文件的移动。
-3. header：请使用TP的return Response()->header()方案设置响应头，如果是SSE等比较特别的，可以参考/extend/ba/Terminal.php的响应头发送方案。
+3. header：请使用TP的return Response()->header()方案设置响应头，如果是SSE等比较特别的，请使用特定格式输出对应所需的响应头内容。
 
 ### 对比传统PHP应用
 1. 常驻内存模式载入程序文件、解析等之后，并不会销毁内存中的数据，使得类的定义、全局对象、类的静态成员 不会释放！ 便于后续重复利用。
@@ -106,7 +103,7 @@ php think worker:win ws -u
 * [创建wss服务](https://www.workerman.net/doc/workerman/faq/secure-websocket-server.html)
 
 ### 自定义协议/服务？
-* 请先检查config/worker_*.php中的配置能否满足您的需求，然后您可以参考已有的http和ws服务创建您自己的定制化服务，模块作者也可以以相同的方式添加新的服务。
+* 请先检查config/worker_*.php中的配置能否满足您的需求，然后您可以参考已有的http和ws服务创建您自己的定制化服务。
 
 ### 模块如何监听onWorkerStart等事件？
-* 在模块开发中，您只需要于模块核心控制器中直接定义onWorkerStart、onWorkerStop、onWebSocketConnect、onWebSocketClose方法，即可监听对应的事件（http服务不支持，仅ws），若不能满足您的需求，请参考已有的ws和http服务自定义您的专属服务，并告知用户如何启动该服务即可。
+* 在模块开发中，您只需要于模块核心控制器中直接定义onWorkerStart、onWorkerStop、onWebSocketConnect、onWebSocketClose方法，即可监听对应的事件（http服务不支持，仅ws），若不能满足您的需求，请参考已有的ws和http服务自定义您的专属服务。
