@@ -1,5 +1,9 @@
 # Workerman工程，让您的Thinkphp应用 `常驻内存` 运行！
 
+## 运行环境
+* php >= 8.0
+* thinkphp >= 8.0
+
 ## 介绍
 * 相同的请求php think run耗时约366ms而本模块仅需9ms，快到看不清保存按钮加载态！
 * 本模块直接依赖 workerman/gateway-worker，您可以使用它提供的方法，也可以直接使用 Workerman 4.x+ 的方法
