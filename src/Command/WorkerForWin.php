@@ -33,26 +33,45 @@ class WorkerForWin extends Command
 		$servers = [];
 		$servers[] = sprintf('think worker:start %s', strtolower($server));
 
+		// TODO 将来可能加入新的服务需要直接处理
+
 		$resource = $this->open_processes($servers);
+		$this->monitor($resource, $servers);
+	}
+
+	/**
+	 * 监控文件变化，热更新
+	 * @param $resource
+	 * @param $servers
+	 * @return void
+	 */
+	protected function monitor($resource, $servers): void
+	{
 		$options = config('worker_process.monitor.constructor', []);
-		if (!empty($options['switch'])) {
-			$monitor = new Monitor($options);
+		if (empty($options['switch'])) {
+			return;
+		}
 
-			while (true) {
-				sleep(1);
-				if ($monitor->checkAllFilesChange()) {
-					$status = proc_get_status($resource);
-					$pid = $status['pid'];
+		$monitor = new Monitor($options);
+		while (true) {
+			sleep(1);
+			if ($monitor->checkAllFilesChange()) {
+				$status = proc_get_status($resource);
+				$pid = $status['pid'];
 
-					shell_exec("taskkill /F /T /PID $pid");
-					proc_close($resource);
+				shell_exec("taskkill /F /T /PID $pid");
+				proc_close($resource);
 
-					$resource = $this->open_processes($servers);
-				}
+				$resource = $this->open_processes($servers);
 			}
 		}
 	}
 
+	/**
+	 * 创建新的进程执行命令
+	 * @param $processFiles
+	 * @return resource|void
+	 */
 	protected function open_processes($processFiles)
 	{
 		$pipes = [];
