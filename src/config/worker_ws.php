@@ -19,7 +19,7 @@ return [
         'protocol'             => 'websocket', // 协议，支持 websocket text frame tcp
         'ip'                   => '0.0.0.0', // 监听地址
         'port'                 => '2828', // 监听端口
-        'name'                 => 'baWebSocketGateway', // 进程名称
+        'name'                 => 'WebSocketGateway', // 进程名称
         'count'                => 2, // 进程数
         'lanIp'                => '127.0.0.1',
         'startPort'            => '1360',
@@ -31,9 +31,9 @@ return [
 
     // 业务(Business)服务参数
     'business'       => [
-        'name'            => 'baWebSocketBusiness',
+        'name'            => 'WebSocketBusiness',
         'count'           => 2,
-        'eventHandler'    => 'app\\worker\\events\\WsBusiness',
+        'eventHandler'    => 'WorkerThink\\Events\\WsBusiness',
         'registerAddress' => "{$register['ip']}:{$register['port']}",
     ],
 
