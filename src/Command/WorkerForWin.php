@@ -2,10 +2,9 @@
 
 namespace WorkerThink\Command;
 
-use think\console\input\Argument;
-use think\console\input\Option;
 use think\console\Command;
 use think\console\Input;
+use think\console\input\Argument;
 use think\console\Output;
 use WorkerThink\Monitor;
 
@@ -31,12 +30,29 @@ class WorkerForWin extends Command
 		}
 
 		$servers = [];
-		$servers[] = sprintf('think worker:start %s', strtolower($server));
+		// $servers[] = sprintf('think worker %s start', strtolower($server));
 
-		// TODO 将来可能加入新的服务需要直接处理
+		$runtimeProcessPath = $this->getRuntimeProcessPath();
+		foreach (config('worker_process', []) as $processName => $config) {
+			if ('process' === $processName) {
+				continue;
+			}
+
+			array_unshift($servers, $this->write_process_file($runtimeProcessPath, $processName, ''));
+		}
 
 		$resource = $this->open_processes($servers);
 		$this->monitor($resource, $servers);
+	}
+
+	protected function getRuntimeProcessPath(): string
+	{
+		$runtimeProcessPath = runtime_path('windows');
+		if (!is_dir($runtimeProcessPath)) {
+			mkdir($runtimeProcessPath);
+		}
+
+		return $runtimeProcessPath;
 	}
 
 	/**
@@ -47,7 +63,7 @@ class WorkerForWin extends Command
 	 */
 	protected function monitor($resource, $servers): void
 	{
-		$options = config('worker_process.monitor.constructor', []);
+		$options = config('worker_process.monitor.constructor.options', []);
 		if (empty($options['switch'])) {
 			return;
 		}
@@ -83,5 +99,47 @@ class WorkerForWin extends Command
 		}
 
 		return $resource;
+	}
+
+	protected function write_process_file($runtimeProcessPath, $processName, $firm): string
+	{
+		$processParam = $firm ? "plugin.$firm.$processName" : $processName;
+		$configParam = $firm ? "config('$firm.process.$processName')" : "\$app->config->get('worker_process.$processName')";
+
+		$fileContent = <<<EOF
+<?php
+namespace think;
+
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+use Workerman\Worker;
+use Workerman\Connection\TcpConnection;
+
+ini_set('display_errors', 'on');
+error_reporting(E_ALL);
+
+if (is_callable('opcache_reset')) {
+    opcache_reset();
+}
+
+try{
+	\$app = new App();
+	\$app->initialize();
+			
+	worker_start('$processParam', $configParam);
+	
+	if (DIRECTORY_SEPARATOR != "/") {
+		Worker::\$logFile = \$app->config->get('worker_http.log_file') ?? Worker::\$logFile;
+		TcpConnection::\$defaultMaxPackageSize = \$app->config->get('worker_http.max_package_size') ?? 10 * 1024 * 1024;
+	}
+	
+	Worker::runAll();
+}catch (\\Exception \$e){
+	dump(\$e);
+}
+EOF;
+		$processFile = sprintf("%sstart_%s.php", $runtimeProcessPath, $processName);
+		file_put_contents($processFile, $fileContent);
+		return $processFile;
 	}
 }
