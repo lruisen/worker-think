@@ -1,5 +1,15 @@
 # Workerman工程，让您的Thinkphp应用 `常驻内存` 运行！
 
+## 特别鸣谢
+
+> 站在巨人的肩膀上
+>
+> 排名不分先后
+
+* [Workerman](https://www.workerman.net)
+* [Webman](https://www.workerman.net/webman)
+* [Thinkphp](https://www.thinkphp.cn)
+
 ## 运行环境
 
 * php >= 8.0
@@ -7,7 +17,7 @@
 
 ## 介绍
 
-* 相同的请求php think run耗时约366ms而本模块仅需9ms，快到看不清保存按钮加载态！
+* 相同的请求约为php think run 耗时的30倍，快到起飞！
 * 本模块直接依赖 workerman/gateway-worker，您可以使用它提供的方法，也可以直接使用 Workerman 4.x+ 的方法
 
 ## 功能特性
@@ -24,7 +34,6 @@
 ### Windows
 
 ```shell
-# 启动http服务
 php think worker:win http
 ```
 
@@ -72,21 +81,23 @@ websocket.onmessage = function (evt) {
 ### Windows
 
 ```shell
-# 启动ws服务
 php think worker:win ws
-
-热更新配置在 `/config/worker_process/`中，APP_DEBUG = true 模式下自动开启热更新
 ```
+
+> 热更新配置在 `/config/worker_process/`中，APP_DEBUG = true 模式下自动开启热更新
 
 ### Linux/Mac
 
-* 以下命令权限不足请自行加sudo
-* 执行php think worker ws start以调试模式启动服务
-* 执行php think worker ws start -d以守护进程模式启动服务
-* php think worker ws stop停止服务
-* php think worker ws restart重启服务
-* php think worker ws reload柔性重启服务
-* php think worker ws status查看服务状态
+```shell
+php think worker ws start           #以调试模式启动服务
+php think worker ws start -d        #以守护进程模式启动服务
+php think worker ws stop            #停止服务
+php think worker ws restart         #重启服务
+php think worker ws reload          #柔性重启服务
+php think worker ws status          #查看服务状态
+```
+
+> 注意：命令权限不足请自行加sudo
 
 ## 常驻内存须知
 
