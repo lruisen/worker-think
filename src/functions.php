@@ -23,7 +23,7 @@ if (!function_exists('worker_start')) {
 		}
 
 		$worker->onWorkerStart = function ($worker) use ($config) {
-			$app = new App(runtime_path());
+			$app = new App();
 			$app->initialize();
 
 			if (!isset($config['handler'])) {

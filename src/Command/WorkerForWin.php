@@ -29,8 +29,9 @@ class WorkerForWin extends Command
 			exit(1);
 		}
 
-		$servers = [];
-		// $servers[] = sprintf('think worker %s start', strtolower($server));
+		$servers = [
+			__WT_PKG__ . DIRECTORY_SEPARATOR . 'start.php'
+		];
 
 		$runtimeProcessPath = $this->getRuntimeProcessPath();
 		foreach (config('worker_process', []) as $processName => $config) {
@@ -38,7 +39,7 @@ class WorkerForWin extends Command
 				continue;
 			}
 
-			array_unshift($servers, $this->write_process_file($runtimeProcessPath, $processName, ''));
+			$servers[] = $this->write_process_file($runtimeProcessPath, $processName, '');
 		}
 
 		$resource = $this->open_processes($servers);
