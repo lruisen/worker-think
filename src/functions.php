@@ -3,6 +3,28 @@
 use think\App;
 use Workerman\Worker;
 
+if (!function_exists('cpu_count')) {
+	/**
+	 * 获取CPU数量
+	 * @return int
+	 */
+	function cpu_count(): int
+	{
+		// Windows不支持进程数设置。
+		if (DIRECTORY_SEPARATOR === '\\') {
+			return 1;
+		}
+
+		$count = 4;
+		if (is_callable('shell_exec')) {
+			$shell = strtolower(PHP_OS) === 'darwin' ? 'sysctl -n machdep.cpu.core_count' : 'nproc';
+			$count = (int)shell_exec($shell);
+		}
+
+		return $count > 0 ? $count : 4;
+	}
+}
+
 if (!function_exists('worker_start')) {
 	/**
 	 * 开启 worker 进程

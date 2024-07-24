@@ -41,7 +41,7 @@ return [
 	 * "demo" => [  // demo 为进程标识， 请勿以 process 为自定义进程名称
 	 *        'handler' => Monitor::class,  // 此处填写进程处理类，比如 think-queue 队列处理
 	 *        'constructor' => [],         // 此处填写 handler 实例的 __constructor 函数接收的全部参数 实例化时会执行 解包
-	 *        'count' => '', // 设置当前Worker实例启动多少个进程，不设置时默认为1。
+	 *        'count' => cpu_count(), // 设置当前Worker实例启动多少个进程，不设置时默认为1。
 	 *        'user' => '',  // 设置当前Worker实例以哪个用户运行。此属性只有当前用户为root时才能生效。不设置时默认以当前用户运行。
 	 *        'reusePort' => false, // 设置当前worker是否开启监听端口复用(socket的SO_REUSEPORT选项)。
 	 *        'transport' => '', // 设置当前Worker实例所使用的传输层协议，目前只支持3种(tcp、udp、ssl)。不设置默认为tcp。
