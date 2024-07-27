@@ -35,11 +35,11 @@ class WorkerForWin extends Command
 
 		$runtimeProcessPath = $this->getRuntimeProcessPath();
 		foreach (config('worker_process', []) as $processName => $config) {
-			if ('process' === $processName) {
+			if ('queue' === $processName) {
 				continue;
 			}
 
-			$servers[] = $this->write_process_file($runtimeProcessPath, $processName, '');
+			$servers[] = $this->write_process_file($runtimeProcessPath, $processName);
 		}
 
 		$resource = $this->open_processes($servers);
@@ -102,10 +102,10 @@ class WorkerForWin extends Command
 		return $resource;
 	}
 
-	protected function write_process_file($runtimeProcessPath, $processName, $firm): string
+	protected function write_process_file($runtimeProcessPath, $processName): string
 	{
-		$processParam = $firm ? "plugin.$firm.$processName" : $processName;
-		$configParam = $firm ? "config('$firm.process.$processName')" : "\$app->config->get('worker_process.$processName')";
+		$processParam = $processName;
+		$configParam = "\$app->config->get('worker_process.$processName')";
 
 		$fileContent = <<<EOF
 <?php
@@ -114,7 +114,6 @@ namespace think;
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Workerman\Worker;
-use Workerman\Connection\TcpConnection;
 
 ini_set('display_errors', 'on');
 error_reporting(E_ALL);
@@ -129,13 +128,8 @@ try{
 			
 	worker_start('$processParam', $configParam);
 	
-	if (DIRECTORY_SEPARATOR != "/") {
-		Worker::\$logFile = \$app->config->get('worker_http.log_file') ?? Worker::\$logFile;
-		TcpConnection::\$defaultMaxPackageSize = \$app->config->get('worker_http.max_package_size') ?? 10 * 1024 * 1024;
-	}
-	
 	Worker::runAll();
-}catch (\\Exception \$e){
+}catch (\\Throwable \$e){
 	dump(\$e);
 }
 EOF;

@@ -11,6 +11,7 @@ $register = [
 ];
 
 return [
+	'enable' => false, // 是否启用
 	// 注册(Register)服务参数
 	'register' => $register,
 

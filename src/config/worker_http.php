@@ -6,11 +6,13 @@ if (!is_dir(dirname($logFile))) {
 }
 
 return [
+	'enable' => true, // 是否启用
+
 	// Worker的参数（支持所有配置项）
 	'option' => [
 		'protocol' => 'http', // 协议，支持 tcp udp unix http websocket text
 		'ip' => '0.0.0.0', // 监听地址
-		'port' => '8000', // 监听端口
+		'port' => '9501', // 监听端口
 		'name' => 'HttpWorker', // Worker实例名称
 		'count' => cpu_count(), // 进程数
 		'pidFile' => sprintf('%shttp.pid', runtime_path('worker')), // 进程ID存储位置

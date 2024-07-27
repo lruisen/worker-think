@@ -126,7 +126,7 @@ class Worker extends Command
 		}
 
 		foreach (config('worker_process') as $process_name => $config) {
-			if ('process' === $process_name) {
+			if ('queue' === $process_name) {
 				continue;
 			}
 
